@@ -1,5 +1,3 @@
-# receipt-processor-mvp
-Browser-based Python app that extracts structured data from receipt images and outputs to Excel
 # Procesador de Recibos MVP
 
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
