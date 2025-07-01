@@ -68,9 +68,3 @@ MIT License
 
 ---
 
-
-## 🛠️ Installation
-(Similar to Spanish version above)
-
-## 🚀 Usage
-(Similar to Spanish version above)
