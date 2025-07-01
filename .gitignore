@@ -48,6 +48,7 @@ Thumbs.db
 coverage.xml
 *.cover
 htmlcov/
+test/sample_receipts/
 
 # Output files
 output.xlsx
