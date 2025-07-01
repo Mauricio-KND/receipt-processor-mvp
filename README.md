@@ -68,15 +68,6 @@ MIT License
 
 ---
 
-# Receipt Processor MVP
-
-Web app to extract structured data from receipt images and export to Excel.
-
-## 📋 Requirements
-
-- Python 3.8+
-- Tesseract OCR installed
-- Python dependencies (see `requirements.txt`)
 
 ## 🛠️ Installation
 (Similar to Spanish version above)
