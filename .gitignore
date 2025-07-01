@@ -53,3 +53,9 @@ test/sample_receipts/
 # Output files
 output.xlsx
 temp_uploads/
+
+# Receipt files - never commit these
+test/sample_receipts/*.jpeg
+test/sample_receipts/*.jpg
+test/sample_receipts/*.png
+test/sample_receipts/*.pdf
