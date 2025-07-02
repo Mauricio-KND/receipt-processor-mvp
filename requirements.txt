@@ -6,7 +6,7 @@ iniconfig==2.1.0
 itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.2
--e git+https://github.com/Mauricio-KND/receipt-processor-mvp.git@d34c4fce6171effb33d917b5828b7c5746c92a46#egg=my_package
+-e git+https://github.com/Mauricio-KND/receipt-processor-mvp.git@942a0201f030b50b8d90170c5360f949afecede0#egg=my_package
 numpy==2.3.1
 opencv-python==4.11.0.86
 openpyxl==3.1.5
