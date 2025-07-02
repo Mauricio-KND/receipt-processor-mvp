@@ -1,22 +1,31 @@
 import os
-from app.ocr import test_ocr
+from typing import Dict
+from app.ocr import export_to_excel, extract_text_from_image, process_receipt, test_ocr
 
-def run_tests():
+def test_ocr(image_path: str) -> Dict:
     """
-    Run the OCR tests.
+    Test the full OCR pipeline with structured output
     """
-    # Define the path to the test image
-    sample_dir = "test/sample_receipts"
-    for filename in os.listdir(sample_dir):
-        if filename.lower().endswith((".jpg", ".png", ".jpeg")):
-            print(f"\nTesting OCR on {filename}...")
-            try:
-                result = test_ocr(os.path.join(sample_dir, filename))
-                print(f"Extracted: {result['word_count']} words, {result['line_count']} lines")
-                print("First 50 characters of raw text:")
-                print(result['raw_text'][:50] + "...")
-            except Exception as e:
-                print(f"Error processing {str(e)}")
-
-if __name__ == "__main__":
-    run_tests()
+    try:
+        # Extract raw text
+        raw_text = extract_text_from_image(image_path)
+        
+        # Process receipt
+        receipt_data = process_receipt(image_path)
+        
+        # Export to Excel
+        excel_path = export_to_excel(receipt_data)
+        
+        return {
+            "status": "success",
+            "raw_text": raw_text,
+            "structured_data": receipt_data,
+            "excel_file": excel_path,
+            "message": f"Recibo procesado correctamente. Excel guardado en {excel_path}"
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "message": "Error procesando el recibo"
+        }
