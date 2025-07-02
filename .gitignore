@@ -48,11 +48,12 @@ Thumbs.db
 coverage.xml
 *.cover
 htmlcov/
-test/sample_receipts/
 
 # Output files
 output.xlsx
 temp_uploads/
+*.xlsx
+
 
 # Receipt files - never commit these
 test/sample_receipts/*.jpeg
