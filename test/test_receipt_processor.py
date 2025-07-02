@@ -28,7 +28,8 @@ def test_sample_receipts():
         'valid': 0,
         'invalid': 0
     }
-    
+    all_receipts = []  # <-- NEW: accumulate all receipts
+
     for filename in sorted(os.listdir(sample_dir)):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
             stats['total'] += 1
@@ -46,7 +47,8 @@ def test_sample_receipts():
             if result.get("status") == "success":
                 stats['success'] += 1
                 data = result.get("structured_data", {})
-                
+                all_receipts.append(data)  # <-- NEW: add to list
+
                 if data.get("es_valido"):
                     stats['valid'] += 1
                     print("✅ VÁLIDO: Recibo procesado correctamente")
@@ -54,19 +56,21 @@ def test_sample_receipts():
                     stats['invalid'] += 1
                     print("⚠️ INCOMPLETO: Recibo procesado con campos faltantes")
                 
-                # Print basic info
                 print(f"📂 Archivo generado: {result.get('excel_file', '')}")
                 print(f"📅 Fecha: {data.get('fecha', 'No encontrada')}")
                 print(f"🏪 Vendedor: {data.get('vendedor', 'No encontrado')}")
                 print(f"💰 Total: {data.get('total', 'No encontrado')}")
-                
-                # Show validation details if invalid
                 print_validation_details(data)
             else:
                 stats['failed'] += 1
                 print(f"❌ FALLIDO: {result.get('error', 'Error desconocido')}")
                 print(f"💬 Mensaje: {result.get('message', 'Ninguno')}")
-    
+
+    # Write all receipts to Excel at the end
+    if all_receipts:
+        from app.ocr import export_to_excel
+        export_to_excel(all_receipts, output_path="recibo.xlsx")
+
     # Print summary
     print("\n📊 Resumen Final:")
     print(f"Total recibos: {stats['total']}")
