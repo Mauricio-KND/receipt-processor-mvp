@@ -1,0 +1,48 @@
+[
+  {
+    "fecha": "26/06/2025",
+    "vendedor": "D1 SAS NIT900276962-1 Gran contribuyente y Agente",
+    "total": "$12.930",
+    "articulos": "1 1 UN 3,490 7700304769766 PAPAS FRITAS 3,490 A\n2 UN 3,800 7700304853724 PAPAS ONDITAS 3,800 A\n3 1UN 3,490 7700304426416 PAPAS FRITAS 3,490 A\n4 1UN 2,150 7700304203079 SALSA ROSADA 2, 150 A\nTOTAL 12,930\nFORMA DE i:AGO: CONTADO - VALOR PAGADO 12,930\nTARJ CRE/DEB § 12,930\nA= 192 12,930 10,866 2,064\n10; 866 2,064\nSee oe ELECTRO eee LTDA NIT 860.005.074-8\niC factura Cadena Nit 890.930.\nATENDIDO POR: LEIDY VEGA 023309 980.534",
+    "texto_crudo": "f\nD1 SAS NIT900276962-1 Gran contribuyente y Agente\nretenedor de IVA Res.000200/24 TEL: 018000120201\nCL 9 4 23 A - 17 CALI ALAMEDA\nCLIENTE: Consuwidor Final €.C: 2222299992\nGeneracion: 2025/06/26 15: 15:13\nValidacion Dian: 2025-06-26 15:15:18\nHI CAN UN VALOR UW == CODTGO DESCRIPCION VALOR ID\n1 1 UN 3,490 7700304769766 PAPAS FRITAS 3,490 A\n2 UN 3,800 7700304853724 PAPAS ONDITAS 3,800 A\n3  1UN 3,490 7700304426416 PAPAS FRITAS 3,490 A\n4 1UN 2,150 7700304203079 SALSA ROSADA 2, 150 A\nTOTAL 12,930\nFORMA DE i:AGO: CONTADO - VALOR PAGADO 12,930\nTARJ CRE/DEB § 12,930\nTARI:9959 Reciba:048876 RRN:369625\nApro:591794\nCAMBIO 0\n' RESUMEN DE IMPUESTOS\n10 TOTAL BASE ~ IVA\nA= 192 12,930 10,866 2,064\n10; 866 2,064\nID. CLIENTE: undefined\nSee oe ELECTRO eee LTDA NIT 860.005.074-8\niC factura Cadena Nit 890.930.\nATENDIDO POR: LEIDY VEGA 023309 980.534\nrng ar tt, 8 7\nesolucion AUS de 20240111 ij\nDE 1 HAST 880090 Vgeeta 18 Hse Pref jo G62\nactura Electronica de Venta g5J2298\nf Do\nor SEG th\neA ee a ee\nial 2 Os, Noe a |\npea ce eras\nFee ar psy wear a ae\nDm apes a |\n| CUFE 691¢6321880937568d6b997 19ed18e97ec0c8726879247bt6a |\n| 6320b5b 1h6e1194cf3 1af 1de5199F319a3et67 F95db fb",
+    "es_valido": true,
+    "campos_faltantes": [],
+    "validation_details": {
+      "fecha": {
+        "required": true,
+        "valid": true
+      },
+      "vendedor": {
+        "required": true,
+        "valid": true
+      },
+      "total": {
+        "required": true,
+        "valid": true
+      }
+    }
+  },
+  {
+    "fecha": "26/06/2025",
+    "vendedor": "MEGA FRUVER EL SUPEF",
+    "total": "$4.825",
+    "articulos": "0.59\n1 UND 3.580,00 2.412,2\n0.56\n2 UND —2-500,00 1.400,0\n3 UND 3:880,00 1.313,4\nTotal bruto; 4.8256\nSubtotal: 4.825,6\nTotal a pagar: 4,825,6:\nEfectvo; 4.825,6\nNit. 830,048.145.-8, |",
+    "texto_crudo": "Espacio para\n. Logo Corperativo\nMEGA FRUVER EL SUPEF\nREGALON SAS\nNIT: 901761919-6\nDir: CALLE 8 26-17\nCali - to.3156127579\nene\nDocumento de ingreso\nNo, 7982\nFecha de elaboracion: 26/06/2025, 11°3¢\nEste documento no reemplaza fa faclura de\nverila ni el documento equivalente, es un\nsoporte de uso contable.\nCliente: Cansumidor Final\nC.ciNIT: 222222222222-7\nDireccian:\nVendedor: jhon anderson arango\nfe. Cant. Vr. Unit Valo\n0.59\n1 UND 3.580,00 2.412,2\nPAPA AMARILLA GRANEL / 3001\n0.56\n2 UND —2-500,00 1.400,0\nLIMON TAHITI / 1017\n0.3%\n3 UND 3:880,00 1.313,4\nZANAHORIA / 2047\nTotal Items:\nTotal bruto; 4.8256\nDescuentos: 00\nSubtotal: 4.825,6\nTotal a pagar: 4,825,6:\nMétodos de pago:\nEfectvo; 4.825,6\nFabricarite dal soflware Sligu S Ag\nNit. 830,048.145.-8, |",
+    "es_valido": true,
+    "campos_faltantes": [],
+    "validation_details": {
+      "fecha": {
+        "required": true,
+        "valid": true
+      },
+      "vendedor": {
+        "required": true,
+        "valid": true
+      },
+      "total": {
+        "required": true,
+        "valid": true
+      }
+    }
+  }
+]

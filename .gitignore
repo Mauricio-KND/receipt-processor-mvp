@@ -60,3 +60,6 @@ test/sample_receipts/*.jpeg
 test/sample_receipts/*.jpg
 test/sample_receipts/*.png
 test/sample_receipts/*.pdf
+
+# Upladed files
+uploads/

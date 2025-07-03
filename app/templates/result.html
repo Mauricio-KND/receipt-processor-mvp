@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resultado</title>
+</head>
+<body>
+    <h1>Resultado del Recibo</h1>
+    <ul>
+        <li><b>Fecha:</b> {{ data['fecha'] }}</li>
+        <li><b>Vendedor:</b> {{ data['vendedor'] }}</li>
+        <li><b>Total:</b> {{ data['total'] }}</li>
+    </ul>
+    <a href="{{ url_for('download', filename=excel_file) }}">Descargar Excel</a>
+    <br><br>
+    <a href="{{ url_for('index') }}">Procesar otro recibo</a>
+</body>
+</html>
