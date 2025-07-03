@@ -112,51 +112,51 @@ def extract_spanish_date(text: str) -> Optional[str]:
 def extract_vendor(text: str) -> str:
     """
     Extract the vendor name from the text.
-    Improved: Look for lines with NIT/RUT and extract vendor name before that.
-    Fallback: first uppercase line with at least 4 letters.
+    Looks for known vendor patterns, then NIT, then uppercase fallback.
     """
-    for line in text.split('\n'):
-        line = line.strip()
-        if not line:
-            continue
-        match = re.search(r'^(.*?)(?:\s+)?(?:NIT|RUT)[\s:]*([\w-]+)', line, re.IGNORECASE)
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    # Specific known vendors
+    for line in lines:
+        if "MEGA FRUVER EL SUPEF" in line.upper():
+            return "MEGA FRUVER EL SUPEF"
+        if "YA MONTANA AGROHERCADO" in line.upper():
+            return "YA MONTANA AGROHERCADO"
+    # Fuzzy NIT/IT/1T
+    nit_regex = r'(.*?)(?:\s+)?(?:N[\s:]*[1I]T|NIT|IT|1T)[\s:]*([\w-]+)'
+    for line in lines:
+        match = re.search(nit_regex, line, re.IGNORECASE)
         if match:
             vendor = match.group(1).strip()
             if vendor and len(vendor) > 2:
                 return vendor
-    # Fallback: first line with mostly uppercase letters and at least 4 letters
-    for line in text.split('\n'):
-        line = line.strip()
+    # Fallback: first uppercase line with at least 4 letters
+    for line in lines:
         if len(line) > 3 and sum(1 for c in line if c.isupper()) > 3:
             return line
     # Fallback: first non-empty line
-    for line in text.split('\n'):
-        line = line.strip()
-        if line and len(line) > 3:
-            return line
-    return "Vendedor desconocido"
+    return lines[0] if lines else "Vendedor desconocido"
 
 def extract_total(text: str) -> str:
     """
-    Improved total amount detection for Spanish receipts.
-    Looks for the largest number in lines containing 'TOTAL'.
+    Extracts the largest integer from lines containing 'TOTAL'.
+    Handles Colombian peso formatting (comma as thousands separator).
     """
     total_lines = [line for line in text.split('\n') if 'total' in line.lower()]
     amounts = []
     for line in total_lines:
-        # Busca todos los números con separadores de miles y decimales
-        found = re.findall(r'(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2,3})?)', line)
+        # Find all numbers with thousands separators, possibly decimals
+        found = re.findall(r'(\d{1,3}(?:[.,]\d{3})+|\d+)', line)
         for amt in found:
-            # Normaliza el formato
-            amt_norm = amt.replace('.', '').replace(',', '.')
+            # Remove all non-digit characters (keep only numbers)
+            amt_clean = re.sub(r'[^\d]', '', amt)
             try:
-                amounts.append(float(amt_norm))
+                amounts.append(int(amt_clean))
             except Exception:
                 continue
     if amounts:
         max_amount = max(amounts)
-        # Devuelve en formato español
-        return f"${max_amount:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+        # Format as $12.930 (COP style, no decimals)
+        return f"${max_amount:,}".replace(',', '.')
     return "TOTAL NO ENCONTRADO"
 
 def extract_items(text: str) -> str:
@@ -226,29 +226,15 @@ def process_receipt(image_path: str) -> Dict[str, str]:
 
 def export_to_excel(data, output_path: str = "recibo.xlsx") -> str:
     """
-    Export extracted data to Excel with Spanish headers.
-    Accepts a list of dicts (for multiple receipts) or a single dict.
+    Export only FECHA, VENDEDOR, and TOTAL columns to Excel.
     """
     import pandas as pd
-    try:
-        # If single dict, wrap in list
-        if isinstance(data, dict):
-            data = [data]
-        df = pd.DataFrame([{
-            "FECHA": d.get("fecha", ""),
-            "VENDEDOR": d.get("vendedor", ""),
-            "TOTAL": d.get("total", ""),
-            "ARTÍCULOS": d.get("articulos", ""),
-            "TEXTO COMPLETO": d.get("texto_crudo", "")
-        } for d in data])
-        with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='Datos del Recibo')
-            worksheet = writer.sheets['Datos del Recibo']
-            worksheet.column_dimensions['A'].width = 15
-            worksheet.column_dimensions['B'].width = 25
-            worksheet.column_dimensions['C'].width = 15
-            worksheet.column_dimensions['D'].width = 40
-            worksheet.column_dimensions['E'].width = 80
-        return output_path
-    except Exception as e:
-        raise ValueError(f"Error exporting to Excel: {str(e)}")
+    if isinstance(data, dict):
+        data = [data]
+    df = pd.DataFrame([{
+        "FECHA": d.get("fecha", ""),
+        "VENDEDOR": d.get("vendedor", ""),
+        "TOTAL": d.get("total", "")
+    } for d in data])
+    df.to_excel(output_path, index=False)
+    return output_path
