@@ -53,6 +53,7 @@ htmlcov/
 output.xlsx
 temp_uploads/
 *.xlsx
+recibos.json
 
 
 # Receipt files - never commit these
@@ -61,5 +62,5 @@ test/sample_receipts/*.jpg
 test/sample_receipts/*.png
 test/sample_receipts/*.pdf
 
-# Upladed files
+# Uploaded files
 uploads/
