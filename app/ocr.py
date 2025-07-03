@@ -111,17 +111,20 @@ def extract_spanish_date(text: str) -> Optional[str]:
 
 def extract_vendor(text: str) -> str:
     """
-    Extract the vendor name from the text.
-    Looks for known vendor patterns, then NIT, then uppercase fallback.
+    Robust vendor extraction:
+    - First, looks for lines with common vendor keywords (e.g., FRUVER, AGROMERCADO).
+    - Then, looks for lines with 'NIT', 'IT', '1T', etc.
+    - Then, looks for lines with many uppercase letters (likely vendor names).
+    - Finally, returns the first non-empty line.
     """
     lines = [line.strip() for line in text.split('\n') if line.strip()]
-    # Specific known vendors
+    # 1. Look for common vendor keywords
+    keywords = ['FRUVER', 'AGROMERCADO', 'SUPERMERCADO', 'TIENDA', 'MINIMERCADO', 'D1', 'EXITO']
     for line in lines:
-        if "MEGA FRUVER EL SUPEF" in line.upper():
-            return "MEGA FRUVER EL SUPEF"
-        if "YA MONTANA AGROHERCADO" in line.upper():
-            return "YA MONTANA AGROHERCADO"
-    # Fuzzy NIT/IT/1T
+        for kw in keywords:
+            if kw in line.upper():
+                return line
+    # 2. Look for NIT/IT/1T pattern
     nit_regex = r'(.*?)(?:\s+)?(?:N[\s:]*[1I]T|NIT|IT|1T)[\s:]*([\w-]+)'
     for line in lines:
         match = re.search(nit_regex, line, re.IGNORECASE)
@@ -129,11 +132,11 @@ def extract_vendor(text: str) -> str:
             vendor = match.group(1).strip()
             if vendor and len(vendor) > 2:
                 return vendor
-    # Fallback: first uppercase line with at least 4 letters
+    # 3. Look for lines with many uppercase letters (likely vendor names)
     for line in lines:
-        if len(line) > 3 and sum(1 for c in line if c.isupper()) > 3:
+        if len(line) >= 8 and sum(1 for c in line if c.isupper()) >= 4:
             return line
-    # Fallback: first non-empty line
+    # 4. Fallback: first non-empty line
     return lines[0] if lines else "Vendedor desconocido"
 
 def extract_total(text: str) -> str:
@@ -224,11 +227,10 @@ def process_receipt(image_path: str) -> Dict[str, str]:
     # Add validation
     return validate_receipt_data(extracted_data)
 
-def export_to_excel(data, output_path: str = "recibo.xlsx") -> str:
+def export_to_excel(data, output_path="recibo.xlsx"):
     """
-    Export only FECHA, VENDEDOR, and TOTAL columns to Excel.
+    Export header columns to Excel.
     """
-    import pandas as pd
     if isinstance(data, dict):
         data = [data]
     df = pd.DataFrame([{
@@ -236,5 +238,10 @@ def export_to_excel(data, output_path: str = "recibo.xlsx") -> str:
         "VENDEDOR": d.get("vendedor", ""),
         "TOTAL": d.get("total", "")
     } for d in data])
-    df.to_excel(output_path, index=False)
+    with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Recibos')
+        worksheet = writer.sheets['Recibos']
+        worksheet.column_dimensions['A'].width = 15
+        worksheet.column_dimensions['B'].width = 30
+        worksheet.column_dimensions['C'].width = 15
     return output_path
