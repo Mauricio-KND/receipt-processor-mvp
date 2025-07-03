@@ -27,23 +27,40 @@ def save_all_receipts(receipts):
 def index():
     if request.method == "POST":
         if "receipt" not in request.files:
-            flash("No file part")
+            flash("No se encontró el archivo a subir.", "danger")
             return redirect(request.url)
         file = request.files["receipt"]
         if file.filename == "":
-            flash("No selected file")
+            flash("No seleccionaste ningún archivo.", "danger")
             return redirect(request.url)
-        if file:
+        if file and file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
             filepath = os.path.join(UPLOAD_FOLDER, file.filename)
             file.save(filepath)
-            data = process_receipt(filepath)
-            # Load, append, save all receipts
-            all_receipts = load_all_receipts()
-            all_receipts.append(data)
-            save_all_receipts(all_receipts)
-            # Regenerate Excel with all receipts
-            export_to_excel(all_receipts, output_path=EXCEL_PATH)
-            return render_template("result.html", data=data, excel_file=EXCEL_FILENAME)
+            try:
+                data = process_receipt(filepath)
+                # Load, append, save all receipts
+                all_receipts = load_all_receipts()
+                all_receipts.append(data)
+                save_all_receipts(all_receipts)
+                # Regenerate Excel with all receipts
+                export_to_excel(all_receipts, output_path=EXCEL_PATH)
+                # Check for missing fields
+                missing = []
+                if not data.get("fecha") or "NO ENCONTRADA" in data.get("fecha", "").upper():
+                    missing.append("Fecha")
+                if not data.get("vendedor") or "NO ENCONTRADO" in data.get("vendedor", "").upper():
+                    missing.append("Vendedor")
+                if not data.get("total") or "NO ENCONTRADO" in data.get("total", "").upper():
+                    missing.append("Total")
+                if missing:
+                    flash(f"Advertencia: Campo(s) faltante(s): {', '.join(missing)}", "warning")
+                return render_template("result.html", data=data, excel_file=EXCEL_FILENAME)
+            except Exception as e:
+                flash(f"Ocurrió un error procesando el recibo: {str(e)}", "danger")
+                return redirect(request.url)
+        else:
+            flash("El archivo debe ser una imagen (.png, .jpg, .jpeg).", "danger")
+            return redirect(request.url)
     return render_template("index.html")
 
 @app.route("/download/<filename>")

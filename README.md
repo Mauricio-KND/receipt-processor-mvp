@@ -1,22 +1,29 @@
 # Procesador de Recibos MVP
 
-![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
-![Flask](https://img.shields.io/badge/flask-3.1.1-green.svg)
+Procesa imágenes de recibos, extrae datos específicos (fecha, vendedor, total) y los exporta a un archivo Excel. Incluye una interfaz web para subir imágenes y descargar el archivo generado.
 
-Aplicación web para extraer datos estructurados de imágenes de recibos y exportarlos a Excel.
+---
 
-## Características principales
-- Procesamiento de imágenes de recibos mediante OCR (Tesseract)
-- Extracción robusta de datos clave (fecha, vendedor, total) con validación y fallback
-- Exportación a formato Excel compatible, siempre actualizado con todos los recibos procesados
-- Interfaz web simple (Flask) para subir imágenes y descargar el Excel generado
-- Almacenamiento persistente de recibos procesados en un archivo JSON
+## 🖥️ Tech Stack
+
+- **Python 3.8+**
+- **Flask** (interfaz web)
+- **OpenCV** (preprocesamiento de imágenes)
+- **pytesseract** (OCR)
+- **pandas** (exportación a Excel)
+- **openpyxl** (formato Excel)
+- **Bootstrap 5** (estilizado web)
+- **Tesseract OCR** (debe estar instalado en el sistema)
+
+---
 
 ## 📋 Requisitos
 
 - Python 3.8+
 - Tesseract OCR instalado en el sistema
 - Dependencias de Python (ver `requirements.txt`)
+
+---
 
 ## 🛠️ Instalación
 
@@ -40,34 +47,74 @@ Aplicación web para extraer datos estructurados de imágenes de recibos y expor
 4. Instalar Tesseract OCR:
    - **Linux**: `sudo apt install tesseract-ocr`
 
+---
+
 ## 🚀 Uso
 
-Para probar el módulo OCR:
+### Terminal:
 ```bash
 python test/test_ocr.py
 ```
 
-Para iniciar la aplicación web:
+```bash
+python test/test_receipt_processor.py
+```
+
+### Iniciar la aplicación web:
 ```bash
 python app/web.py
 ```
+Luego abre tu navegador en [http://localhost:5000](http://localhost:5000) y sube imágenes de recibos para procesarlas.  
+Podrás descargar el archivo Excel actualizado con todos los recibos procesados.
 
-Luego abre tu navegador en [http://localhost:5000](http://localhost:5000) y sube imágenes de recibos para procesarlas.
+---
 
 ## 📝 Estructura del Proyecto
+
 ```
 receipt-processor-mvp/
-├── app/                   # Código principal
+├── app/
 │   ├── ocr.py             # Funciones de procesamiento OCR y extracción de datos
 │   ├── web.py             # Aplicación Flask (interfaz web)
-│   └── templates/         # Plantillas HTML para la web
-├── test/                  # Pruebas
-│   └── sample_receipts/   # Imágenes de prueba
+│   ├── __init__.py
+│   └── templates/         # HTML (Bootstrap)
+│       ├── index.html
+│       └── result.html
+├── test/                  # Pruebas y recibos de ejemplo
+│   └── ...
+├── recibo.xlsx            # Archivo Excel generado (siempre actualizado)
 ├── recibos.json           # Base de datos simple de recibos procesados
-├── recibo.xlsx            # Archivo Excel generado con todos los recibos
-└── requirements.txt       # Dependencias
+├── requirements.txt
+└── README.md
 ```
 
-## 📄 Licencia
-MIT
+---
+
+## ✅ Funcionalidades
+
+- Extracción robusta de fecha, vendedor y total desde imágenes de recibos.
+- Procesamiento de múltiples recibos (persistencia en JSON).
+- Exportación a Excel con los datos clave.
+- Interfaz web amigable con Bootstrap.
+- Mensajes de error y advertencia para campos faltantes o archivos inválidos.
+- Botón de descarga para el Excel actualizado.
+
+---
+
+## ℹ️ Notas
+
+- Para reiniciar la base de datos de recibos, borra el archivo `recibos.json`.
+- El archivo Excel siempre contendrá todos los recibos procesados hasta el momento.
+
+---
+
+## 📦 Próximos upgrades
+
+- Mejorar la extracción de ítems detallados (opcional).
+- Permitir edición/corrección manual de campos desde la web (opcional).
+- Despliegue en la nube (opcional).
+
+---
+
+# 🚀 ¡Listo para usar y seguir desarrollando!
 
