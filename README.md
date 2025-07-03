@@ -7,9 +7,10 @@ Aplicación web para extraer datos estructurados de imágenes de recibos y expor
 
 ## Características principales
 - Procesamiento de imágenes de recibos mediante OCR (Tesseract)
-- Extracción de datos clave (fecha, vendedor, total)
-- Exportación a formato Excel compatible
-- Interfaz web simple (Flask)
+- Extracción robusta de datos clave (fecha, vendedor, total) con validación y fallback
+- Exportación a formato Excel compatible, siempre actualizado con todos los recibos procesados
+- Interfaz web simple (Flask) para subir imágenes y descargar el Excel generado
+- Almacenamiento persistente de recibos procesados en un archivo JSON
 
 ## 📋 Requisitos
 
@@ -27,6 +28,7 @@ Aplicación web para extraer datos estructurados de imágenes de recibos y expor
 
 2. Crear y activar entorno virtual:
    ```bash
+   python3 -m venv venv
    source venv/bin/activate
    ```
 
@@ -45,24 +47,27 @@ Para probar el módulo OCR:
 python test/test_ocr.py
 ```
 
-Para iniciar la aplicación web (próximamente):
+Para iniciar la aplicación web:
 ```bash
-python app/main.py
+python app/web.py
 ```
+
+Luego abre tu navegador en [http://localhost:5000](http://localhost:5000) y sube imágenes de recibos para procesarlas.
 
 ## 📝 Estructura del Proyecto
 ```
 receipt-processor-mvp/
-├── app/               # Código principal
-│   ├── ocr.py         # Funciones de procesamiento OCR
-│   └── main.py        # Aplicación Flask
-├── test/              # Pruebas
-│   └── sample_receipts/ # Imágenes de prueba
-└── requirements.txt   # Dependencias
+├── app/                   # Código principal
+│   ├── ocr.py             # Funciones de procesamiento OCR y extracción de datos
+│   ├── web.py             # Aplicación Flask (interfaz web)
+│   └── templates/         # Plantillas HTML para la web
+├── test/                  # Pruebas
+│   └── sample_receipts/   # Imágenes de prueba
+├── recibos.json           # Base de datos simple de recibos procesados
+├── recibo.xlsx            # Archivo Excel generado con todos los recibos
+└── requirements.txt       # Dependencias
 ```
 
 ## 📄 Licencia
-MIT License
-
----
+MIT
 
