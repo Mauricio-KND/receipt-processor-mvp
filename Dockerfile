@@ -1,5 +1,5 @@
 # Use an official Python image
-FROM python:3.10-slim
+FROM python:3.10-slim-bullseye
 
 # Install system dependencies for Tesseract and OpenCV
 RUN apt-get update && \
