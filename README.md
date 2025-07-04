@@ -62,6 +62,41 @@ Open [http://localhost:5000](http://localhost:5000) in your browser, upload rece
 
 ---
 
+## 🌐 Deployment
+
+### Local
+Just run:
+```bash
+python app/web.py
+```
+and open [http://localhost:5000](http://localhost:5000).
+
+### Railway (Cloud) Deployment
+
+This project includes a `Dockerfile` for seamless deployment on Railway or any Docker-compatible platform.
+
+**Steps:**
+1. Push your code (with the Dockerfile) to GitHub.
+2. Create a new Railway project and link your repository.
+3. Railway will auto-detect and use the Dockerfile—no need for custom build/start commands.
+4. The app will be available at your Railway-provided URL.
+
+**What the Dockerfile does:**
+- Installs all system dependencies for Tesseract OCR and OpenCV.
+- Installs Python dependencies from `requirements.txt`.
+- Exposes port 8080 (used by Railway).
+- Starts the Flask app with `python app/web.py`.
+
+**Note:**  
+If you want to run the app locally with Docker:
+```bash
+docker build -t receipt-processor-mvp .
+docker run -p 8080:8080 receipt-processor-mvp
+```
+Then open [http://localhost:8080](http://localhost:8080).
+
+---
+
 ## 📝 Project Structure
 
 ```
@@ -88,6 +123,7 @@ receipt-processor-mvp/
 - Always-up-to-date Excel export with only the relevant columns.
 - Simple, user-friendly web interface.
 - Error and warning messages for missing/invalid fields.
+- **Easy deployment on Railway with Docker support.**
 
 ---
 
