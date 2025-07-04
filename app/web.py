@@ -23,6 +23,14 @@ def save_all_receipts(receipts):
     with open(DATA_PATH, "w", encoding="utf-8") as f:
         json.dump(receipts, f, ensure_ascii=False, indent=2)
 
+def is_duplicate(new, existing):
+    """Check if two receipts are the same based on fecha, vendedor, and total."""
+    return (
+        new.get("fecha") == existing.get("fecha") and
+        new.get("vendedor") == existing.get("vendedor") and
+        new.get("total") == existing.get("total")
+    )
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -38,12 +46,16 @@ def index():
             file.save(filepath)
             try:
                 data = process_receipt(filepath)
-                # Load, append, save all receipts
+                # Load all receipts
                 all_receipts = load_all_receipts()
-                all_receipts.append(data)
-                save_all_receipts(all_receipts)
-                # Regenerate Excel with all receipts
-                export_to_excel(all_receipts, output_path=EXCEL_PATH)
+                # Check for duplicates
+                if not any(is_duplicate(data, r) for r in all_receipts):
+                    all_receipts.append(data)
+                    save_all_receipts(all_receipts)
+                    export_to_excel(all_receipts, output_path=EXCEL_PATH)
+                    flash("Recibo procesado y guardado correctamente.", "success")
+                else:
+                    flash("Este recibo ya fue procesado previamente.", "info")
                 # Check for missing fields
                 missing = []
                 if not data.get("fecha") or "NO ENCONTRADA" in data.get("fecha", "").upper():

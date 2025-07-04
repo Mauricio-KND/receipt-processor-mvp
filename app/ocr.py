@@ -1,3 +1,4 @@
+import difflib
 import re
 import openpyxl
 import openpyxl.styles
@@ -111,20 +112,35 @@ def extract_spanish_date(text: str) -> Optional[str]:
 
 def extract_vendor(text: str) -> str:
     """
-    Robust vendor extraction:
-    - First, looks for lines with common vendor keywords (e.g., FRUVER, AGROMERCADO).
-    - Then, looks for lines with 'NIT', 'IT', '1T', etc.
-    - Then, looks for lines with many uppercase letters (likely vendor names).
-    - Finally, returns the first non-empty line.
+    Improved vendor extraction:
+    - Fuzzy match for common vendor keywords (handles OCR errors).
+    - Looks for lines with multiple vendor-related keywords (for multi-word vendors).
+    - Looks for lines with many uppercase letters or likely brand names.
+    - Falls back to NIT/IT/1T pattern.
+    - Returns first non-empty line if nothing else matches.
     """
+
     lines = [line.strip() for line in text.split('\n') if line.strip()]
-    # 1. Look for common vendor keywords
-    keywords = ['FRUVER', 'AGROMERCADO', 'SUPERMERCADO', 'TIENDA', 'MINIMERCADO', 'D1', 'EXITO']
+    keywords = [
+        'FRUVER', 'AGROMERCADO', 'AGROPECUARIA', 'CRIADERO', 'VILLAMARIA', 'FARMATODO', 'SUPERMERCADO',
+        'TIENDA', 'MINIMERCADO', 'D1', 'EXITO', 'FARMACIA', 'FARMATO'
+    ]
+    # 1. Fuzzy match for vendor keywords (allow OCR errors)
     for line in lines:
         for kw in keywords:
-            if kw in line.upper():
+            match = difflib.get_close_matches(kw, [line.upper()], n=1, cutoff=0.7)
+            if match:
                 return line
-    # 2. Look for NIT/IT/1T pattern
+    # 2. Look for lines with multiple vendor-related keywords (for multi-word vendors)
+    for line in lines:
+        count = sum(1 for kw in keywords if kw in line.upper())
+        if count >= 2:
+            return line
+    # 3. Look for lines with many uppercase letters or likely brand names
+    for line in lines:
+        if (sum(1 for c in line if c.isupper()) >= 6) or (len(line.split()) == 1 and len(line) > 6):
+            return line
+    # 4. Look for NIT/IT/1T pattern
     nit_regex = r'(.*?)(?:\s+)?(?:N[\s:]*[1I]T|NIT|IT|1T)[\s:]*([\w-]+)'
     for line in lines:
         match = re.search(nit_regex, line, re.IGNORECASE)
@@ -132,33 +148,51 @@ def extract_vendor(text: str) -> str:
             vendor = match.group(1).strip()
             if vendor and len(vendor) > 2:
                 return vendor
-    # 3. Look for lines with many uppercase letters (likely vendor names)
-    for line in lines:
-        if len(line) >= 8 and sum(1 for c in line if c.isupper()) >= 4:
-            return line
-    # 4. Fallback: first non-empty line
+    # 5. Fallback: first non-empty line
     return lines[0] if lines else "Vendedor desconocido"
 
 def extract_total(text: str) -> str:
     """
-    Extracts the largest integer from lines containing 'TOTAL'.
-    Handles Colombian peso formatting (comma as thousands separator).
+    Fuzzy total extraction:
+    - Finds lines where a word is at least 80% similar to 'total'.
+    - Extracts the closest number to that word.
+    - If not found, falls back to the largest number in the receipt.
     """
-    total_lines = [line for line in text.split('\n') if 'total' in line.lower()]
+    lines = text.split('\n')
     amounts = []
-    for line in total_lines:
-        # Find all numbers with thousands separators, possibly decimals
+    total_candidates = []
+
+    for line in lines:
+        words = re.findall(r'\w+', line)
+        for word in words:
+            # Fuzzy match: at least 60% similarity to 'total'
+            if difflib.SequenceMatcher(None, word.lower(), "total").ratio() >= 0.6:
+                # Extract all numbers from this line
+                found = re.findall(r'(\d{1,3}(?:[.,]\d{3})+|\d+)', line)
+                for amt in found:
+                    amt_clean = re.sub(r'[^\d]', '', amt)
+                    try:
+                        total_candidates.append(int(amt_clean))
+                    except Exception:
+                        continue
+
+    # If found by fuzzy match, return the largest candidate
+    if total_candidates:
+        max_amount = max(total_candidates)
+        return f"${max_amount:,}".replace(',', '.')
+
+    # Fallback: largest number in the whole receipt
+    for line in lines:
         found = re.findall(r'(\d{1,3}(?:[.,]\d{3})+|\d+)', line)
         for amt in found:
-            # Remove all non-digit characters (keep only numbers)
             amt_clean = re.sub(r'[^\d]', '', amt)
             try:
                 amounts.append(int(amt_clean))
             except Exception:
                 continue
+
     if amounts:
         max_amount = max(amounts)
-        # Format as $12.930 (COP style, no decimals)
         return f"${max_amount:,}".replace(',', '.')
     return "TOTAL NO ENCONTRADO"
 
@@ -229,19 +263,17 @@ def process_receipt(image_path: str) -> Dict[str, str]:
 
 def export_to_excel(data, output_path="recibo.xlsx"):
     """
-    Export header columns to Excel.
+    Export only VENDOR and TOTAL VALUE columns to Excel.
     """
     if isinstance(data, dict):
         data = [data]
     df = pd.DataFrame([{
-        "FECHA": d.get("fecha", ""),
-        "VENDEDOR": d.get("vendedor", ""),
-        "TOTAL": d.get("total", "")
+        "VENDOR": d.get("vendedor", ""),
+        "TOTAL VALUE": d.get("total", "")
     } for d in data])
     with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name='Recibos')
-        worksheet = writer.sheets['Recibos']
-        worksheet.column_dimensions['A'].width = 15
-        worksheet.column_dimensions['B'].width = 30
-        worksheet.column_dimensions['C'].width = 15
+        df.to_excel(writer, index=False, sheet_name='Receipts')
+        worksheet = writer.sheets['Receipts']
+        worksheet.column_dimensions['A'].width = 30
+        worksheet.column_dimensions['B'].width = 18
     return output_path
