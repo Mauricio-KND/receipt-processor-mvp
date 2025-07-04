@@ -78,36 +78,38 @@ def test_ocr(image_path: str) -> Dict:
     
 def extract_spanish_date(text: str) -> Optional[str]:
     """
-    Extract a date in multiple format.
-    Enhanced Spanish date extraction with several patterns
+    Extract a date in multiple formats, including fallback for OCR quirks.
     """
     patterns = [
-        # YYYY/MM/DD or YYYY-MM-DD
-        r'(\d{4})[/-](\d{2})[/-](\d{2})',
-        # DD/MM/YYYY or DD-MM-YYYY
-        r'(\d{2})[/-](\d{2})[/-](\d{4})',
-        # Pattern for dates like "26/06/2025" (found in receipt3)
-        r'(?<!\d)(\d{2})[/-](\d{2})[/-](\d{4})(?!\d)',
-        # Pattern for dates like "26-Jun-2025"
-        r'(?<!\d)(\d{2})[-/](' + '|'.join([m[:3].lower() for m in SPANISH_MONTHS]) + r')[-/](\d{4})(?!\d)',
-        # Pattern for dates like "26 de jun. 2025"
-        r'(\d{1,2})\s+de\s+(' + '|'.join([m[:3].lower() + r'\.?' for m in SPANISH_MONTHS]) + r')\s+de?\s+(\d{4})'
-        # DD/MM/YYYY or DD-MM-YYYY
-        r'(?:\b|\D)(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})\b',
-        # DD de MES de YYYY (15 de julio de 2023)
-        r'(\d{1,2})\s+de\s+(' + '|'.join(SPANISH_MONTHS) + r')\s+de\s+(\d{4})',
-        # Month abbreviations (15 jul. 2023)
-        r'(\d{1,2})\s+(' + '|'.join([m[:3] + r'\.?' for m in SPANISH_MONTHS]) + r')\s+(\d{4})'
+        r'(\d{4})[/-](\d{2})[/-](\d{2})',  # YYYY/MM/DD or YYYY-MM-DD
+        r'(\d{2})[/-](\d{2})[/-](\d{4})',  # DD/MM/YYYY or DD-MM-YYYY
+        r'(\d{2})[. ](\d{2})[. ](\d{4})',  # DD.MM.YYYY or DD MM YYYY
+        r'(\d{1,2})\s+de\s+([a-zA-Z]+)\s+de\s+(\d{4})',  # 15 de julio de 2023
+        r'(\d{1,2})\s+([a-zA-Z]{3,})\.?\s+(\d{4})',      # 15 jul. 2023
+        r'(\d{2})[/-](\d{2})[/-](\d{2,4})',              # DD/MM/YY(YY)
     ]
     for pattern in patterns:
         match = re.search(pattern, text)
         if match:
-            if len(match.groups()) == 3:
-                if len(match.group(1)) == 4:  # YYYY/MM/DD
-                    year, month, day = match.group(1), match.group(2), match.group(3)
-                else:  # DD/MM/YYYY
-                    day, month, year = match.group(1), match.group(2), match.group(3)
+            groups = match.groups()
+            if len(groups) == 3:
+                # Try to normalize month if it's a name
+                day, month, year = groups
+                if not month.isdigit():
+                    # Try to convert Spanish month name to number
+                    months = {
+                        'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04', 'mayo': '05', 'junio': '06',
+                        'julio': '07', 'agosto': '08', 'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12',
+                        'ene': '01', 'feb': '02', 'mar': '03', 'abr': '04', 'may': '05', 'jun': '06',
+                        'jul': '07', 'ago': '08', 'sep': '09', 'oct': '10', 'nov': '11', 'dic': '12'
+                    }
+                    month = months.get(month.lower()[:3], '01')
                 return f"{day.zfill(2)}/{month.zfill(2)}/{year}"
+    # Fallback: look for 8-digit numbers (e.g., 20240627 or 27062024)
+    fallback = re.search(r'(\d{2})(\d{2})(\d{4})', text)
+    if fallback:
+        day, month, year = fallback.groups()
+        return f"{day}/{month}/{year}"
     return None
 
 def extract_vendor(text: str) -> str:
