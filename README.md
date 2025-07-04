@@ -95,8 +95,7 @@ receipt-processor-mvp/
 
 - To reset the processed receipts, delete `recibos.json`.
 - The Excel file will always contain all unique processed receipts.
+- Some receipts with extreme OCR errors or highly unusual layouts may not be extracted properly.
 
 ---
-
-# 🚀 Ready for the next phase!
 
