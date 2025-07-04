@@ -56,7 +56,7 @@ temp_uploads/
 recibos.json
 
 
-# Receipt files - never commit these
+# Receipt files
 test/sample_receipts/*.jpeg
 test/sample_receipts/*.jpg
 test/sample_receipts/*.png
