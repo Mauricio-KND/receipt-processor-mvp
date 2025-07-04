@@ -9,7 +9,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Set work directory
-WORKDIR /
+WORKDIR /app
 
 # Copy requirements and install
 COPY requirements.txt .
