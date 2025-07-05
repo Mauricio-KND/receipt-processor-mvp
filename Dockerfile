@@ -26,4 +26,4 @@ ENV FLASK_APP=app/web.py
 ENV PYTHONUNBUFFERED=1
 
 # Start the app (use $PORT for Railway)
-CMD ["python", "-m", "app.web"]
+CMD ["gunicorn", "app.web:app", "--bind", "0.0.0.0:8080"]
