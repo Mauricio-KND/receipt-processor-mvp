@@ -1,11 +1,11 @@
-# Receipt Processor MVP
+# Receipt Processor MVP (receipt2sheet)
 
 Extracts the **vendor** and **total value** from purchase receipt images and exports them to an Excel file.  
 Includes a web interface for uploading images and downloading the updated Excel.
 
 ---
 
-## 🖥️ Tech Stack
+## Tech Stack
 
 - **Python 3.8+**
 - **Flask** (web interface)
@@ -18,7 +18,7 @@ Includes a web interface for uploading images and downloading the updated Excel.
 
 ---
 
-## 📋 Requirements
+## Requirements
 
 - Python 3.8+
 - Tesseract OCR installed (`sudo apt install tesseract-ocr`)
@@ -26,7 +26,7 @@ Includes a web interface for uploading images and downloading the updated Excel.
 
 ---
 
-## 🛠️ Installation
+## Installation
 
 1. Clone the repository:
    ```bash
@@ -52,7 +52,7 @@ Includes a web interface for uploading images and downloading the updated Excel.
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ### Web App:
 ```bash
@@ -62,7 +62,7 @@ Open [http://localhost:5000](http://localhost:5000) in your browser, upload rece
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
 ### Local
 Just run:
@@ -78,7 +78,7 @@ This project includes a `Dockerfile` for seamless deployment on Railway or any D
 **Steps:**
 1. Push your code (with the Dockerfile) to GitHub.
 2. Create a new Railway project and link your repository.
-3. Railway will auto-detect and use the Dockerfile—no need for custom build/start commands.
+3. Railway will auto-detect and use the Dockerfile.
 4. The app will be available at your Railway-provided URL.
 
 **What the Dockerfile does:**
@@ -116,18 +116,18 @@ receipt-processor-mvp/
 
 ---
 
-## ✅ Features
+## Features
 
 - Extracts **vendor** and **total value** from receipts (robust to OCR errors).
 - Prevents duplicate receipts.
 - Always-up-to-date Excel export with only the relevant columns.
 - Simple, user-friendly web interface.
 - Error and warning messages for missing/invalid fields.
-- **Easy deployment on Railway with Docker support.**
+- **Deployment on Railway with Docker support.**
 
 ---
 
-## ℹ️ Notes
+## Notes
 
 - To reset the processed receipts, delete `recibos.json`.
 - The Excel file will always contain all unique processed receipts.
