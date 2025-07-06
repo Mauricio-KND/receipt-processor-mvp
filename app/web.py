@@ -81,6 +81,17 @@ def download(filename):
     file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), filename)
     return send_file(file_path, as_attachment=True)
 
+@app.route("/receipt-count")
+def receipt_count():
+    """Return the count of processed receipts"""
+    all_receipts = load_all_receipts()
+    return {"count": len(all_receipts)}
+
+@app.route("/home")
+def home():
+    """Home page redirect"""
+    return redirect(url_for('index'))
+
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 8080))  # Default to 8080 for Railway
