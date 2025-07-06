@@ -1,21 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Subir Recibo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>receipt2sheet</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-bottom: 60px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .intro-text {
+            text-align: justify;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        /* Custom file input button styling */
+        .custom-file-input::-webkit-file-upload-button {
+            visibility: hidden;
+        }
+        .custom-file-input::before {
+            content: 'Seleccionar archivo';
+            display: inline-block;
+            background: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 6px 12px;
+            outline: none;
+            white-space: nowrap;
+            cursor: pointer;
+            font-weight: 400;
+            font-size: 1rem;
+        }
+        .custom-file-input:hover::before {
+            border-color: #adb5bd;
+        }
+        .custom-file-input:active::before {
+            background: #e9ecef;
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem !important; }
+            .btn, .custom-file-input::before { 
+                font-size: 1rem !important; 
+                padding: 8px 16px !important; 
+            }
+            .form-control { font-size: 1rem !important; }
+            .intro-text { font-size: 0.95rem; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="mt-5">Subir Recibo</h1>
-        <form method="post" enctype="multipart/form-data" class="mt-3">
+    <div class="container text-center">
+        <h1 class="mt-4 mb-4">receipt2sheet</h1>
+        
+        <div class="intro-text">
+            <p>Sube una imagen de tu recibo y extraeremos:</p>
+            <ul class="text-start">
+                <li>Nombre del establecimiento</li>
+                <li>Total pagado</li>
+            </ul>
+            <p>Los datos se agregan en un archivo Excel que puedes descargar.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
             <div class="mb-3">
-                <input type="file" name="receipt" accept="image/*" required class="form-control">
+                <input type="file" name="receipt" accept="image/*" required 
+                       class="form-control form-control-lg custom-file-input" 
+                       id="customFile">
+                <label class="form-label visually-hidden" for="customFile">Subir recibo</label>
             </div>
-            <button type="submit" class="btn btn-primary">Procesar</button>
+            <button type="submit" class="btn btn-primary btn-lg">Procesar Recibo</button>
         </form>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
-            <div class="mt-3">
+            <div class="mt-4">
               {% for category, message in messages %}
                 <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
                   {{ message }}
@@ -26,6 +101,32 @@
           {% endif %}
         {% endwith %}
     </div>
+
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <p class="mb-1">Total procesados: <span id="receiptCount">0</span></p>
+                    <p class="mb-0 small">2025 - Mauricio Drada Dávila - mauriciodradadavila@gmail.com +57 310 2841994</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load receipt count
+        fetch('/receipt-count')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('receiptCount').textContent = data.count;
+            });
+        
+        // Update file input label
+        document.getElementById('customFile').addEventListener('change', function(e) {
+            var fileName = e.target.files[0]?.name || 'Seleccionar archivo';
+            this.nextElementSibling.textContent = fileName;
+        });
+    </script>
 </body>
 </html>
